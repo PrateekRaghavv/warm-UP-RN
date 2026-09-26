@@ -1,17 +1,20 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Link, router } from 'expo-router';
 export default function Home() {
+    const { width } = useWindowDimensions();
+
     return (
         <View style={homeStyle.homebackground}>
             <Text style={homeStyle.title}>Home Screen</Text>
 
             <View style={homeStyle.buttonContainer}>
-                <Link href="/page/Travelling">
+                <Link href='./Travelling' asChild>
                     <Pressable style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]} >
                         <Text style={homeStyle.buttonText}>Travelling?</Text>
 
                     </Pressable>
                 </Link>
+
                 <Pressable style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]}>
                     <Text style={homeStyle.buttonText}>Order?</Text>
                 </Pressable>
@@ -43,11 +46,14 @@ const homeStyle = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 16,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        flexWrap: 'wrap'
     },
 
     button: {
-        width: 220,
+        width: '30%',
+        minWidth: 150,
+        maxWidth: 500,
         minHeight: 56,
         backgroundColor: '#5DADE2',
         borderRadius: 14,
