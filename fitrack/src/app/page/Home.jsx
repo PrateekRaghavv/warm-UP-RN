@@ -8,19 +8,16 @@ export default function Home() {
             <Text style={homeStyle.title}>Home Screen</Text>
 
             <View style={homeStyle.buttonContainer}>
-                <Link href='./Travelling' asChild>
-                    <Pressable style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]} >
+                    <Pressable  onPressOut={()=>router.push("/page/Travelling")}  style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]} >
                         <Text style={homeStyle.buttonText}>Travelling?</Text>
-
                     </Pressable>
-                </Link>
 
-                <Pressable style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]}>
+                <Pressable onPressOut={()=>router.push("/page/Order")} style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]}>
                     <Text style={homeStyle.buttonText}>Order?</Text>
                 </Pressable>
 
-                <Pressable style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]}>
-                    <Text style={homeStyle.buttonText}>Browse</Text>
+                <Pressable onPressOut={()=>router.push("/page/Browse")} style={({ pressed }) => [homeStyle.button, pressed && homeStyle.buttonPressed]}>
+                    <Text style={homeStyle.buttonText}>Explore</Text>
                 </Pressable>
             </View>
         </View >
