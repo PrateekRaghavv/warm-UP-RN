@@ -7,14 +7,15 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 export default function Travelling() {
     const [departureDate, setDepartureDate] = useState();
     const [arrivalDate, setArrivalDate] = useState();
-    const [Cities, setCities] = useState(false)
+    const [departureCities, setDepartureCities] = useState(false);
+    const [destinationCities, setDestinationCities] = useState(false);
 
-    function cities(value){
-        fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`).then(response=>response.json()).then(data=>{
+    function cities(value) {
+        fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`).then(response => response.json()).then(data => {
             // console.log(data); 
-            setCities(data.features);
+            setDepartureCities(data.features);
         })
-    }    
+    }
 
     const openDatePicker = (e) => {
 
@@ -31,7 +32,8 @@ export default function Travelling() {
                         setArrivalDate(selectedDate);
                     }
                 }
-            }});
+            }
+        });
     }
     return (
         <View style={styles.inputContainer}>
@@ -49,16 +51,26 @@ export default function Travelling() {
                             size={24}
                             color="#000"
                         />
-                        <TextInput
-                            style={{ width: '60%', fontSize: 16 }}
-                            onChange={(e) => cities(e.nativeEvent.text)}
-                            placeholder='Enter Departure City' />
-                        <View style={{ position: 'absolute', top: 50, left: 10, width: '100%', backgroundColor: '#fff', zIndex: 999 }}>
-                            {Cities && Cities.map((city, index) => (
-                                <Pressable key={index} onPress={() => console.log(city.properties.formatted)}>
-                                    <Text>{city.properties.formatted}</Text>
-                                </Pressable>
-                            ))}
+                        <View style={{ flexDirection: 'column', width: '100%' }}>
+                            <TextInput
+                                style={{ width: '60%', fontSize: 16 }}
+                                value={departureCity}
+
+                                onChange={(e) => cities(e.nativeEvent.text)}
+                                placeholder='Enter Departure City' />
+
+                            <View style={{ position: 'absolute', top: 50, left: -29, width: '100%', zIndex: 999, gap: 10, padding: 10, borderRadius: 10 }}>
+
+                                {Cities && Cities.map((city, index) => (
+                                    <Pressable
+                                        key={index} onPress={() => {
+                                            setDepartureCity(city.properties.formatted)
+                                            setCities(false)
+                                        }} style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 5 }}>
+                                        <Text>{city.properties.formatted}</Text>
+                                    </Pressable>
+                                ))}
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -72,9 +84,27 @@ export default function Travelling() {
                             size={24}
                             color="#000"
                         />
-                        <TextInput
-                            style={{ width: '60%', fontSize: 16 }}
-                            placeholder='Enter Destination City' />
+                        <View style={{ flexDirection: 'column', width: '100%' }}>
+                            <TextInput
+                                style={{ width: '60%', fontSize: 16 }}
+                                value={destinationCity}
+                                onChange={(e) => cities(e.nativeEvent.text)}
+
+                                placeholder='Enter Destination City' />
+                            <View style={{ position: 'absolute', top: 50, left: -29, width: '100%', zIndex: 999, gap: 10, padding: 10, borderRadius: 10 }}>
+
+                                {Cities && Cities.map((city, index) => (
+                                    <Pressable
+                                        key={index} onPress={() => {
+                                            setDestinationCity(city.properties.formatted) 
+                                            setCities(false)
+                                        }} style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 5 }}>
+                                        <Text>{city.properties.formatted}</Text>
+                                    </Pressable>
+                                ))}
+                            </View>
+                        </View>
+                                
                     </View>
                 </View>
             </View>
