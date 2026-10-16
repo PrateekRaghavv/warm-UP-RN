@@ -5,18 +5,40 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 
 export default function Travelling() {
-    const [departureDate, setDepartureDate] = useState();
-    const [arrivalDate, setArrivalDate] = useState();
-    const [departureCities, setDepartureCities] = useState(false);
-    const [destinationCities, setDestinationCities] = useState(false);
+    const [data, setData] = useState({
+        Departure: {
+            city: '',
+            date: ''
+        },
+        Arrival: {
+            city: '',
+            date: ''
+        }
+    });
+    console.log(data)
+    const [CitiesList, setCitiesList] = useState([]);
+    const [activeField, setActiveField] = useState()
+    async function cities(value) {
+        let Response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`)
 
-    function cities(value) {
-        fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`).then(response => response.json()).then(data => {
-            // console.log(data); 
-            setDepartureCities(data.features);
-        })
+        const data = await Response.json()
+        setCitiesList(data.features)
+        return data.features
     }
 
+   async function AddTripDetails() {
+       const response = fetch('/TravelingDetails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                data: data,
+            }),
+        })
+        const result = await response.json();
+        console.log(result)// updated according to backend
+    }
     const openDatePicker = (e) => {
 
         return DateTimePickerAndroid.open({
@@ -26,10 +48,10 @@ export default function Travelling() {
                 if (selectedDate) {
 
                     if (e === 'departure') {
-                        setDepartureDate(selectedDate);
+                        setData((prev) => ({ ...prev, Departure: { ...prev.Departure, date: selectedDate } }));
                     }
                     if (e === 'arrival') {
-                        setArrivalDate(selectedDate);
+                        setData((prev) => ({ ...prev, Arrival: { ...prev.Arrival, date: selectedDate } }));
                     }
                 }
             }
@@ -51,29 +73,46 @@ export default function Travelling() {
                             size={24}
                             color="#000"
                         />
-                        <View style={{ flexDirection: 'column', width: '100%' }}>
+
+
+
+                        <View style={{ flexDirection: 'column', width: '100%', zIndex: 500 }}>
+
                             <TextInput
                                 style={{ width: '60%', fontSize: 16 }}
-                                value={departureCity}
 
-                                onChange={(e) => cities(e.nativeEvent.text)}
-                                placeholder='Enter Departure City' />
+                                onChangeText={(e) => {
+                                    cities(e)
+                                    setActiveField('Departure')
 
-                            <View style={{ position: 'absolute', top: 50, left: -29, width: '100%', zIndex: 999, gap: 10, padding: 10, borderRadius: 10 }}>
+                                }}
+                                placeholder='Enter Departure City'
 
-                                {Cities && Cities.map((city, index) => (
+                            />
+
+
+                            <View style={{ position: 'absolute', top: 10, zIndex: 500 }}>
+
+                                {activeField === 'Departure' && CitiesList.map((city, index) => (
                                     <Pressable
+
                                         key={index} onPress={() => {
-                                            setDepartureCity(city.properties.formatted)
-                                            setCities(false)
-                                        }} style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 5 }}>
+                                            setCitiesList([])
+                                            setData((prev) => ({ ...prev, Departure: { ...prev.Departure, city: city.properties.formatted } }))
+                                        }}
+                                        style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 5 }}>
                                         <Text>{city.properties.formatted}</Text>
                                     </Pressable>
                                 ))}
+
                             </View>
+
+
                         </View>
                     </View>
+
                 </View>
+
                 <View style={styles.Input}>
                     <View>
                         <Text style={styles.NormalFontSize}>To</Text>
@@ -84,30 +123,42 @@ export default function Travelling() {
                             size={24}
                             color="#000"
                         />
-                        <View style={{ flexDirection: 'column', width: '100%' }}>
+                        <View style={{ flexDirection: 'column', width: '100%', zIndex: 500 }}>
+
                             <TextInput
                                 style={{ width: '60%', fontSize: 16 }}
-                                value={destinationCity}
-                                onChange={(e) => cities(e.nativeEvent.text)}
 
-                                placeholder='Enter Destination City' />
-                            <View style={{ position: 'absolute', top: 50, left: -29, width: '100%', zIndex: 999, gap: 10, padding: 10, borderRadius: 10 }}>
+                                onChangeText={(e) => {
+                                    cities(e)
+                                    setActiveField('Arrival')
+                                }}
+                                placeholder='Enter Arrival City'
+                            />
 
-                                {Cities && Cities.map((city, index) => (
+
+                            <View style={{ position: 'absolute', top: 10, zIndex: 500 }}>
+
+                                {activeField === 'Arrival' && CitiesList.map((city, index) => (
                                     <Pressable
+
                                         key={index} onPress={() => {
-                                            setDestinationCity(city.properties.formatted) 
-                                            setCities(false)
-                                        }} style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 5 }}>
+                                            setCitiesList([])
+                                            setData((prev) => ({ ...prev, Arrival: { ...prev.Arrival, city: city.properties.formatted } }))
+                                        }}
+                                        style={{ borderBottomWidth: 1, borderBottomColor: '#000', padding: 5 }}>
                                         <Text>{city.properties.formatted}</Text>
                                     </Pressable>
                                 ))}
+
                             </View>
+
+
                         </View>
-                                
                     </View>
+
                 </View>
             </View>
+
             <View style={{ gap: 20, width: '100%', alignItems: 'center' }}>
                 <View style={styles.DateCard}>
                     <View>
@@ -115,7 +166,7 @@ export default function Travelling() {
                     </View>
                     <View>
                         <Pressable onPress={() => openDatePicker('departure')} style={{ backgroundColor: '#5DADE2', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
-                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{departureDate ? departureDate.toLocaleDateString() : 'SELECT DATE'}</Text>
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{data.Departure.date ? data.Departure.date.toLocaleDateString() : 'SELECT DATE'}</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -126,13 +177,15 @@ export default function Travelling() {
                     </View>
                     <View>
                         <Pressable onPress={() => openDatePicker('arrival')} style={{ backgroundColor: '#5DADE2', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
-                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{arrivalDate ? arrivalDate.toLocaleDateString() : 'SELECT DATE'}</Text>
+                            <Text style={{ color: '#fff', fontWeight: 'bold' }}>{data.Arrival.date ? data.Arrival.date.toLocaleDateString() : 'SELECT DATE'}</Text>
                         </Pressable>
                     </View>
                 </View>
             </View>
             <View style={{ gap: 20, width: '100%', alignItems: 'center' }}>
-                <Pressable style={{ backgroundColor: '#5DADE2', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
+                <Pressable
+                    onPress={AddTripDetails}
+                    style={{ backgroundColor: '#5DADE2', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>ADD TRIP</Text>
                 </Pressable>
             </View>
@@ -148,7 +201,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         padding: 10,
-        gap: 10
+        gap: 10,
+        zIndex: 500,
+        elevation: 10
     },
     inputContainer: {
         flex: 1,
