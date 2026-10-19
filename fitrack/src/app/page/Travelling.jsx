@@ -15,9 +15,10 @@ export default function Travelling() {
             date: ''
         }
     });
-    console.log(data)
+    
     const [CitiesList, setCitiesList] = useState([]);
     const [activeField, setActiveField] = useState()
+
     async function cities(value) {
         let Response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`)
 
@@ -26,18 +27,31 @@ export default function Travelling() {
         return data.features
     }
 
-   async function AddTripDetails() {
-       const response = fetch('/TravelingDetails', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                data: data,
-            }),
-        })
-        const result = await response.json();
-        console.log(result)// updated according to backend
+    async function AddTripDetails() {
+        if(data.Departure.city && data.Departure.date && data.Arrival.city && data.Arrival.date){
+
+        
+        try {
+
+            const response =await fetch('https://miniature-guide-pjpq7r9r7j443679g-8080.app.github.dev/TravelingDetails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    data: data,
+                }),
+            })
+            const result = await response.json();
+            console.log(result)// updated according to backend
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    else{
+        console.log('please fill all the feilds')
+    }
     }
     const openDatePicker = (e) => {
 
