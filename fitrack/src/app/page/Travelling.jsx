@@ -15,10 +15,13 @@ export default function Travelling() {
             date: ''
         }
     });
-    
+
     const [CitiesList, setCitiesList] = useState([]);
     const [activeField, setActiveField] = useState()
 
+    const URL = process.env.EXPO_PUBLIC_API_URL; //for local development
+
+    const CODESPACE_URL = process.env.CODESPACE_URL; //for codespace development
     async function cities(value) {
         let Response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`)
 
@@ -28,30 +31,29 @@ export default function Travelling() {
     }
 
     async function AddTripDetails() {
-        if(data.Departure.city && data.Departure.date && data.Arrival.city && data.Arrival.date){
+        if (data.Departure.city && data.Departure.date && data.Arrival.city && data.Arrival.date) {
 
-        
-        try {
-
-            const response =await fetch('https://miniature-guide-pjpq7r9r7j443679g-8080.app.github.dev/TravelingDetails', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    data: data,
-                }),
-            })
-            const result = await response.json();
-            console.log(result)// updated according to backend
+            try {
+                console.log(`${URL}/TravelingDetails`);
+                const response = await fetch(`${URL}/TravelingDetails`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        data: data,
+                    }),
+                })
+                const result = await response.json();
+                console.log(result)// updated according to backend
+            }
+            catch (err) {
+                console.log('err', err)
+            }
         }
-        catch (err) {
-            console.log(err)
+        else {
+            console.log('please fill all the feilds')
         }
-    }
-    else{
-        console.log('please fill all the feilds')
-    }
     }
     const openDatePicker = (e) => {
 
@@ -77,7 +79,7 @@ export default function Travelling() {
                 <Text style={styles.BigFontSize}>Where are you Travelling?</Text>
             </View>
             <View style={{ gap: 20, width: '100%', alignItems: 'center' }}>
-                <View style={styles.Input}>
+                <View style={[styles.Input, { zIndex: 2, elevation: 2 }]}>
                     <View>
                         <Text style={styles.NormalFontSize}>From</Text>
                     </View>
@@ -88,25 +90,24 @@ export default function Travelling() {
                             color="#000"
                         />
 
-
-
                         <View style={{ flexDirection: 'column', width: '100%', zIndex: 500 }}>
 
                             <TextInput
                                 style={{ width: '60%', fontSize: 16 }}
+                                value={data.Departure.city}
 
                                 onChangeText={(e) => {
                                     cities(e)
                                     setActiveField('Departure')
-
+                                    setData(prev => ({ ...prev, Departure: { ...prev.Departure, city: e } }))
                                 }}
                                 placeholder='Enter Departure City'
 
                             />
 
 
-                            <View style={{ position: 'absolute', top: 10, zIndex: 500 }}>
-
+                            <View style={{ position: 'absolute', top: 35, backgroundColor: '#fff', width: '90%' }}>
+                                8
                                 {activeField === 'Departure' && CitiesList.map((city, index) => (
                                     <Pressable
 
@@ -127,7 +128,7 @@ export default function Travelling() {
 
                 </View>
 
-                <View style={styles.Input}>
+                <View style={[styles.Input, { zIndex: 1, elevation: 1 }]}>
                     <View>
                         <Text style={styles.NormalFontSize}>To</Text>
                     </View>
@@ -141,16 +142,18 @@ export default function Travelling() {
 
                             <TextInput
                                 style={{ width: '60%', fontSize: 16 }}
-
+                                value={data.Arrival.city}
                                 onChangeText={(e) => {
                                     cities(e)
-                                    setActiveField('Arrival')
+                                    setActiveField('Arrival');
+                                    setData(prev => ({ ...prev, Arrival: { ...prev.Arrival, city: e } }))
                                 }}
                                 placeholder='Enter Arrival City'
+                                required
                             />
 
 
-                            <View style={{ position: 'absolute', top: 10, zIndex: 500 }}>
+                            <View style={{ position: 'absolute', top: 35, backgroundColor: '#fff', width: '90%' }}>
 
                                 {activeField === 'Arrival' && CitiesList.map((city, index) => (
                                     <Pressable
