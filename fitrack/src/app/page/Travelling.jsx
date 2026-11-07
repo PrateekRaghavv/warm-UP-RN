@@ -20,8 +20,10 @@ export default function Travelling() {
     const [activeField, setActiveField] = useState()
 
     const URL = process.env.EXPO_PUBLIC_API_URL; //for local development
+    const CODESPACE_URL = process.env.EXPO_PUBLIC_CODESPACE_URL; //for codespace development
 
-    const CODESPACE_URL = process.env.CODESPACE_URL; //for codespace development
+    console.log("CODESPACE:", CODESPACE_URL);
+
     async function cities(value) {
         let Response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`)
 
@@ -31,29 +33,34 @@ export default function Travelling() {
     }
 
     async function AddTripDetails() {
-        if (data.Departure.city && data.Departure.date && data.Arrival.city && data.Arrival.date) {
+        try {
+            const response = await fetch(`${CODESPACE_URL}/TripData/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
 
-            try {
-                console.log(`${URL}/TravelingDetails`);
-                const response = await fetch(`${URL}/TravelingDetails`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+            if (response.ok) { // clearing after data sent
+                setData({
+                    Departure: {
+                        city: '',
+                        date: ''
                     },
-                    body: JSON.stringify({
-                        data: data,
-                    }),
+                    Arrival: {
+                        city: '',
+                        date: ''
+                    }
                 })
-                const result = await response.json();
-                console.log(result)// updated according to backend
             }
-            catch (err) {
-                console.log('err', err)
-            }
+
+
         }
-        else {
-            console.log('please fill all the feilds')
+        catch (err) {
+            console.log('err', err)
         }
+
     }
     const openDatePicker = (e) => {
 
@@ -107,7 +114,6 @@ export default function Travelling() {
 
 
                             <View style={{ position: 'absolute', top: 35, backgroundColor: '#fff', width: '90%' }}>
-                                8
                                 {activeField === 'Departure' && CitiesList.map((city, index) => (
                                     <Pressable
 

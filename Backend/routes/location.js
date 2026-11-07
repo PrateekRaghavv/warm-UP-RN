@@ -1,13 +1,21 @@
 import express from "express";
-import loginuser from "../Controllers/login.js";
+import mongoose from 'mongoose';
+import {user} from '../Model/trip.js'
 const router = express.Router();
 
-// router.post("/locationdataAdd", loginuser, locationdataAdd);
-router.post("/locationdataAdd", locationdataAdd);
 
-router.post("/dataAdd", (req, res) => {
-  console.log(req.body);
-  res.json("Connected successfully!");
+router.post("/add", async (req, res) => {
+  try {
+
+    const data = await user.create(req.body)
+    res.status(201).json({ message: "Added successfully!" });
+  }
+  catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
 });
 
 export default router;
