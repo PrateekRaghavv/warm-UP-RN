@@ -26,11 +26,20 @@ export default function Travelling() {
     console.log("CODESPACE:", CODESPACE_URL);
 
     async function cities(value) {
-        let Response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`)
+        if (value) {
+            try {
+                let Response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${value}&apiKey=f2c62a1d72a84f29bc671791fac91b4f`)
 
-        const data = await Response.json()
-        setCitiesList(data.features)
-        return data.features
+                const data = await Response.json()
+                setCitiesList(data.features)
+                return data.features
+            }
+            catch (error) {
+                console.log(error)
+            }
+        }
+
+
     }
 
     async function AddTripDetails() {
@@ -102,7 +111,7 @@ export default function Travelling() {
                         <View style={{ flexDirection: 'column', width: '100%', zIndex: 500 }}>
 
                             <TextInput
-                                style={{ width: '60%', fontSize: 16 }}
+                                style={{ width: '90%', fontSize: 16 }}
                                 value={data.Departure.city}
 
                                 onChangeText={(e) => {
@@ -215,7 +224,7 @@ export default function Travelling() {
                 </Pressable>
             </View>
             <View>
-                <Pressable onPressOut={()=>router.push("./PreviousTrips")} style={{ backgroundColor: '#0062a4', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
+                <Pressable onPressOut={() => router.push("./PreviousTrips")} style={{ backgroundColor: '#0062a4', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Previous Trips</Text>
                 </Pressable>
             </View>

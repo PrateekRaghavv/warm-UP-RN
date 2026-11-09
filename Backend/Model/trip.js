@@ -7,7 +7,7 @@ const schema = mongoose.Schema({
         },
         date:  {
             type: Date,
-            required: false
+            required: true
         }
         
     },
@@ -18,7 +18,7 @@ const schema = mongoose.Schema({
         },
         date:  {
             type: Date,
-            required: false
+            required: true
         }
     }
 })
