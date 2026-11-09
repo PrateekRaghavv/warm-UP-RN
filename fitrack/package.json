@@ -24,6 +24,7 @@
     "expo-glass-effect": "~55.0.11",
     "expo-image": "~55.0.11",
     "expo-image-picker": "~55.0.24",
+    "expo-linear-gradient": "~55.0.18",
     "expo-linking": "~55.0.17",
     "expo-router": "~55.0.18",
     "expo-splash-screen": "~55.0.25",
@@ -43,6 +44,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~55.0.1",
     "typescript": "~5.9.2"
   },
   "private": true

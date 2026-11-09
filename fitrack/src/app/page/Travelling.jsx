@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, TextInput, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { Link, router } from 'expo-router';
 
 
 export default function Travelling() {
@@ -43,6 +44,7 @@ export default function Travelling() {
             })
 
             if (response.ok) { // clearing after data sent
+                console.log("received")
                 setData({
                     Departure: {
                         city: '',
@@ -155,7 +157,7 @@ export default function Travelling() {
                                     setData(prev => ({ ...prev, Arrival: { ...prev.Arrival, city: e } }))
                                 }}
                                 placeholder='Enter Arrival City'
-                                required
+
                             />
 
 
@@ -210,6 +212,11 @@ export default function Travelling() {
                     onPress={AddTripDetails}
                     style={{ backgroundColor: '#5DADE2', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>ADD TRIP</Text>
+                </Pressable>
+            </View>
+            <View>
+                <Pressable onPressOut={()=>router.push("./PreviousTrips")} style={{ backgroundColor: '#0062a4', padding: 10, borderRadius: 10, width: '80%', alignItems: 'center' }}>
+                    <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Previous Trips</Text>
                 </Pressable>
             </View>
         </View>
