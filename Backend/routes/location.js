@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from 'mongoose';
 import { user } from '../Model/trip.js'
 const router = express.Router();
 
